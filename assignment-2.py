@@ -23,7 +23,7 @@ def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
     csv_data = pd.read_csv(filePath, skiprows=sRows)
     df1 = csv_data
     
-    # get first datafrom years as column
+    # get first datafrom years as index column
     df1.index = df1.iloc[:, 0]
 
     # remove non numerical data from df
@@ -49,15 +49,14 @@ def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
     # clean the transposed dataframe those are completely empty and then drop column with missing entries
     df_transposed = df_transposed.dropna(how='all').dropna(axis=1)    
     
-    
+    # make year as integer for the graph to avoid cluttering
     df_transposed.index = pd.to_numeric(df_transposed.index)
 
-    
     return df1, df_transposed
 
 
 df_yearsAsColumn, df_countryAsColumn = getDataFramesFromCsv(
-    '../API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831/API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
+    '../from oil/API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
 df_countryAsColumn.to_csv('../test1.csv')
 df_yearsAsColumn.to_csv('../test.csv')
 print(df_countryAsColumn)
