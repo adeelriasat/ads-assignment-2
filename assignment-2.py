@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import stats   # homemade stats routines
 import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+from scipy.stats import kendalltau
 
 
 def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
@@ -87,6 +89,13 @@ def showSkewnessAndKurtosis(df):
     print('<--Kurtosis of Distribution-->')
     print(stats.kurtosis(df))
     
+def plotBarGraph(x, y, label=''):
+    plt.figure(figsize=(8,6))
+    plt.bar(x, y, label=label)
+    plt.xlabel("Year")
+    plt.ylabel("Electricity Production (% of total)")
+    plt.legend()
+    plt.show()
     
 # get two dataframe from method one with country as column and one with year as column
 df_elecFromOilYear, df_elecFromOilCountry = getDataFramesFromCsv(
@@ -115,22 +124,15 @@ sortedByUkDesc = df_elecFromOilCountry.sort_values(by=['United Kingdom'], ascend
 df_elecFromCoalYear, df_elecFromCoalCountry = getDataFramesFromCsv(
     '../from coal/API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4) 
 
-# get electricty production from renewable sources data
-df_elecFromRenewableYear, df_elecFromRewewableCountry = getDataFramesFromCsv(
-    '../from renewable/API_EG.ELC.RNWX.KH_DS2_en_csv_v2_5358682.csv', sRows=4, nonNumericalRows=4) 
-
-# df_elecFromCoalYear.to_csv('../coalyear.csv')
-# df_elecFromCoalCountry.to_csv('../coalcountry.csv')
-
 # convert to int to avoid cluttering
 df_elecFromOilCountry.index = df_elecFromOilCountry.index.astype(int)
 df_elecFromCoalCountry.index = df_elecFromCoalCountry.index.astype(int)
-df_elecFromRewewableCountry.index = df_elecFromRewewableCountry.index.astype(int)
+
 
 # plot the line graph from 1960 to 2015
 plt.figure(figsize=(8,6))
 plt.plot(df_elecFromOilCountry.index, df_elecFromOilCountry["United Kingdom"], label="UK (From Oil)")
-plt.plot(df_elecFromCoalCountry.index, df_elecFromCoalCountry["United Kingdom"], label="From (From Coal)")
+plt.plot(df_elecFromCoalCountry.index, df_elecFromCoalCountry["United Kingdom"], label="UK (From Coal)")
 
 plt.plot(df_elecFromOilCountry.index, df_elecFromOilCountry["Australia"], label="AUS (From Oil)")
 plt.plot(df_elecFromCoalCountry.index, df_elecFromCoalCountry["Australia"], label="AUS (From Coal)")
@@ -141,12 +143,36 @@ plt.legend()
 plt.show()
 
 # plot the bar graph
+# plot from 2010 to onward
+df_from_oil = df_elecFromOilCountry[df_elecFromOilCountry.index >= 2010]
+df_from_coal = df_elecFromCoalCountry[df_elecFromCoalCountry.index >= 2010]
+plotBarGraph(df_from_oil.index, df_from_oil["United Kingdom"], 'From Oil')
+plotBarGraph(df_from_coal.index, df_from_coal["United Kingdom"], 'From Coal')
 
+# second indicator
 
+df_popGrowthYear, df_popGrowthCountry = getDataFramesFromCsv(
+    '../pop growth/API_SP.POP.GROW_DS2_en_csv_v2_5358698.csv', sRows=4, nonNumericalRows=4) 
 
-# pearsons_corr = cities.corr()
-# kendall_corr = cities.corr(method='kendall')
-# print('correlation')
-# print('pearsons Correlation')
-# print(pearsons_corr)
-# print(kendall_corr)
+# plot the line graph for population growth
+plt.figure(figsize=(8,6))
+plt.plot(df_popGrowthCountry.index, df_popGrowthCountry["United Kingdom"], label="UK Population Growth")
+plt.plot(df_popGrowthCountry.index, df_popGrowthCountry["Australia"], label="Aus Population Growth")
+
+plt.xlabel("Year")
+plt.ylabel("Population growth (annual %)")
+plt.legend()
+plt.show()
+
+# now find if there is any correlation between population growth electricity production from different sources
+# find the correlation between growth and oil
+
+pop_growth_uk = df_popGrowthCountry['United Kingdom']
+oil_electricity_uk = df_elecFromOilCountry['United Kingdom']
+length = len(oil_electricity_uk)
+# Calculate the Pearson correlation coefficient and p-value
+# get correlation of only matching rows but specifying lenght
+corr_coeff_pearson, p_value = pearsonr(oil_electricity_uk, pop_growth_uk[:length])
+
+corr_coeff_kendall, p_value = kendalltau(oil_electricity_uk, pop_growth_uk[:length])
+print(corr_coeff_kendall)
