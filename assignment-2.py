@@ -7,7 +7,7 @@ Created on Tue Mar 28 01:00:11 2023
 
 import numpy as np
 import pandas as pd
-
+import stats   # homemade stats routines
 
 def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
     """ Method to return dataframes:
@@ -54,9 +54,61 @@ def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
 
     return df1, df_transposed
 
+def exploreStatProperties(df):
+    """
+    Parameters
+    ----------
+    df : pandas dataframe.
 
-df_yearsAsColumn, df_countryAsColumn = getDataFramesFromCsv(
+    Returns:
+    None
+    Show.
+    different statistical properties of a dataframe
+    """
+    # show basic stats
+    print('Basis Stats of Distribution')
+    basic_stats = df.describe()
+    print(basic_stats)
+
+def showSkewnessAndKurtosis(df):
+    """
+
+    Parameters
+    ----------
+    df : pandas dataframe.
+
+    this method will take panda series and show skewness and kurtosis
+    """
+    # show skewness and kurotosis
+    print('<--Skewness of Distribution-->')
+    print(stats.skew(df))
+    print('<--Kurtosis of Distribution-->')
+    print(stats.kurtosis(df))
+    
+    
+# get two dataframe from method one with country as column and one with year as column
+df_elecFromOilYear, df_elecFromOilCountry = getDataFramesFromCsv(
     '../from oil/API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
-df_countryAsColumn.to_csv('../test1.csv')
-df_yearsAsColumn.to_csv('../test.csv')
-print(df_countryAsColumn)
+
+# df_yearsAsColumn, df_countryAsColumn = getDataFramesFromCsv(
+#     '../from coal/API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4)
+
+# explore the statistical properties
+exploreStatProperties(df_elecFromOilYear)
+showSkewnessAndKurtosis(df_elecFromOilYear['2010'])
+showSkewnessAndKurtosis(df_elecFromOilYear['2015'])
+
+# calculate mean, median , and max of united kingdom elec production from oil
+# using aggregate function
+print('<--Mean, Median, Max, Min Electricty Production From Oil of UK from 1960 to 2015-->')
+print(df_elecFromOilCountry['United Kingdom'].aggregate(['mean', 'median', 'max', 'min']))
+
+
+# sort values by production of elec in asc order for australia column
+sortedByAustraliaAsc = df_elecFromOilCountry.sort_values(by=['Australia'])
+
+# now in descending order for united kingdom
+sortedByUkDesc = df_elecFromOilCountry.sort_values(by=['United Kingdom'], ascending=False)
+
+print(sortedByUkDesc['United Kingdom'])
+
