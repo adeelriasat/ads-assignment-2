@@ -117,7 +117,7 @@ def plotBarGraph(x, y, label=''):
 
 # get two dataframe from method one with country as column and one with year as column
 df_elecFromOilYear, df_elecFromOilCountry = getDataFramesFromCsv(
-    '../from oil/API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
+    'API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
 # explore the statistical properties
 exploreStatProperties(df_elecFromOilYear)
 showSkewnessAndKurtosis(df_elecFromOilYear['2010'])
@@ -141,7 +141,7 @@ sortedByUkDesc = df_elecFromOilCountry.sort_values(
 
 # get electricty production from coal data
 df_elecFromCoalYear, df_elecFromCoalCountry = getDataFramesFromCsv(
-    '../from coal/API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4)
+    'API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4)
 # print(df_elecFromCoalCountry)
 
 corr_coeff_coal_oil_1, p_value = pearsonr(df_elecFromOilCountry['United Kingdom'], df_elecFromCoalCountry['United Kingdom'])
@@ -169,6 +169,8 @@ plt.plot(df_elecFromCoalCountry.index,
          df_elecFromCoalCountry["Canada"], label="Canada (From Coal)")
 
 plt.plot(df_elecFromOilCountry.index,
+         
+         
          df_elecFromOilCountry["Australia"], label="AUS (From Oil)")
 
 plt.plot(df_elecFromCoalCountry.index,
@@ -189,7 +191,7 @@ plotBarGraph(df_from_coal.index, df_from_coal["United Kingdom"], 'From Coal')
 # second indicator
 
 df_popGrowthYear, df_popGrowthCountry = getDataFramesFromCsv(
-    '../pop growth/API_SP.POP.GROW_DS2_en_csv_v2_5358698.csv', sRows=4, nonNumericalRows=4)
+    'API_SP.POP.GROW_DS2_en_csv_v2_5358698.csv', sRows=4, nonNumericalRows=4)
 
 # plot the line graph for population growth
 plt.figure(figsize=(8, 6), dpi=1000)
