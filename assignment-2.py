@@ -8,6 +8,8 @@ Created on Tue Mar 28 01:00:11 2023
 import numpy as np
 import pandas as pd
 import stats   # homemade stats routines
+import matplotlib.pyplot as plt
+
 
 def getDataFramesFromCsv(filePath, sRows=0, nonNumericalRows=0):
     """ Method to return dataframes:
@@ -89,10 +91,7 @@ def showSkewnessAndKurtosis(df):
 # get two dataframe from method one with country as column and one with year as column
 df_elecFromOilYear, df_elecFromOilCountry = getDataFramesFromCsv(
     '../from oil/API_EG.ELC.PETR.ZS_DS2_en_csv_v2_5362831.csv', sRows=4, nonNumericalRows=4)
-
-# df_yearsAsColumn, df_countryAsColumn = getDataFramesFromCsv(
-#     '../from coal/API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4)
-
+print(df_elecFromOilCountry.index)
 # explore the statistical properties
 exploreStatProperties(df_elecFromOilYear)
 showSkewnessAndKurtosis(df_elecFromOilYear['2010'])
@@ -110,5 +109,44 @@ sortedByAustraliaAsc = df_elecFromOilCountry.sort_values(by=['Australia'])
 # now in descending order for united kingdom
 sortedByUkDesc = df_elecFromOilCountry.sort_values(by=['United Kingdom'], ascending=False)
 
-print(sortedByUkDesc['United Kingdom'])
+# plot the bar graph to check the production of electricty from oil and production of elec from coal
 
+# get electricty production from coal data
+df_elecFromCoalYear, df_elecFromCoalCountry = getDataFramesFromCsv(
+    '../from coal/API_EG.ELC.COAL.ZS_DS2_en_csv_v2_5362822.csv', sRows=4, nonNumericalRows=4) 
+
+# get electricty production from renewable sources data
+df_elecFromRenewableYear, df_elecFromRewewableCountry = getDataFramesFromCsv(
+    '../from renewable/API_EG.ELC.RNWX.KH_DS2_en_csv_v2_5358682.csv', sRows=4, nonNumericalRows=4) 
+
+# df_elecFromCoalYear.to_csv('../coalyear.csv')
+# df_elecFromCoalCountry.to_csv('../coalcountry.csv')
+
+# convert to int to avoid cluttering
+df_elecFromOilCountry.index = df_elecFromOilCountry.index.astype(int)
+df_elecFromCoalCountry.index = df_elecFromCoalCountry.index.astype(int)
+df_elecFromRewewableCountry.index = df_elecFromRewewableCountry.index.astype(int)
+
+# plot the line graph from 1960 to 2015
+plt.figure(figsize=(8,6))
+plt.plot(df_elecFromOilCountry.index, df_elecFromOilCountry["United Kingdom"], label="UK (From Oil)")
+plt.plot(df_elecFromCoalCountry.index, df_elecFromCoalCountry["United Kingdom"], label="From (From Coal)")
+
+plt.plot(df_elecFromOilCountry.index, df_elecFromOilCountry["Australia"], label="AUS (From Oil)")
+plt.plot(df_elecFromCoalCountry.index, df_elecFromCoalCountry["Australia"], label="AUS (From Coal)")
+
+plt.xlabel("Year")
+plt.ylabel("Electricity Production (% of total)")
+plt.legend()
+plt.show()
+
+# plot the bar graph
+
+
+
+# pearsons_corr = cities.corr()
+# kendall_corr = cities.corr(method='kendall')
+# print('correlation')
+# print('pearsons Correlation')
+# print(pearsons_corr)
+# print(kendall_corr)
